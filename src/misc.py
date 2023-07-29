@@ -1,19 +1,37 @@
 from os.path import dirname, abspath, join, exists
 from os import environ
+import sys
+
+
+# ROOT
+# _____
+CURRENT_DIR = "UNDEFINED"
+frozen = getattr(sys, "frozen", "")
+if not frozen:
+    # not frozen: in regular python interpreter
+    CURRENT_DIR = dirname(abspath(__file__))
+
+elif frozen in ("macosx_app",):
+    # py2app
+    CURRENT_DIR = environ["RESOURCEPATH"]
 
 # GLOBAL
 # ________
 HOME_DIR = environ["HOME"]
 DOWNLOADS_DIR = "Downloads"
-CURRENT_DIR = dirname(abspath(__file__))
+APPDATA_DIR = "appdata"
 DEFAULT_INPUT_DIR = join(HOME_DIR, DOWNLOADS_DIR, "input")
 DEFAULT_OUTPUT_DIR = join(HOME_DIR, DOWNLOADS_DIR, "output")
-CONFIG_FILE = join(CURRENT_DIR, "config.json")
-TEMPLATE_FILE = join(CURRENT_DIR, "template.txt")
+
+# APP DATA
+# ________
+VERSION_FILE = join(CURRENT_DIR, APPDATA_DIR, "VERSION.txt")
+CONFIG_FILE = join(CURRENT_DIR, APPDATA_DIR, "config.json")
+TEMPLATE_FILE = join(CURRENT_DIR, APPDATA_DIR, "template.txt")
 
 # GUI
 # _____
-GUI_ICON_PATH = join(CURRENT_DIR, "watermark.ico")
+GUI_ICON_PATH = join(CURRENT_DIR, APPDATA_DIR, "watermark.ico")
 FONT_STYLE = "font: italic bold;"
 FONT_SIZE = "font-size: 10px;"
 
@@ -58,7 +76,6 @@ if exists(TEMPLATE_FILE):
 
 # VERSION
 # _____
-VERSION_FILE = join(CURRENT_DIR, "VERSION")
 
 
 def read_version_file() -> str:

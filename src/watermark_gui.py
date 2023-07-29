@@ -43,7 +43,7 @@ class PdfWatermarkApp(QMainWindow):
     def __init__(self) -> None:
         super().__init__()
         self.setWindowTitle(f"{APP_NAME} (GUI)")
-        self.setGeometry(100, 100, 400, 450)
+        self.setGeometry(100, 100, 400, 680)
 
         self.watermark_config = WatermarkConfig()
         self.watermark_config_text = json.dumps(
@@ -199,6 +199,11 @@ class PdfWatermarkApp(QMainWindow):
             self.dropdown.addItem(item)
         self.dropdown.setGeometry(248, 414, 100, 30)
         self.dropdown.currentIndexChanged.connect(self.on_dropdown_selection)
+
+        # SET FIXED GEOMETRY
+        # ____
+        self.setFixedHeight(self.height())
+        self.setFixedWidth(self.width())
 
     # ----------------#
     # BUTTON HANDLERS #
@@ -408,4 +413,4 @@ if __name__ == "__main__":
     app.setWindowIcon(QIcon(GUI_ICON_PATH))
     window = PdfWatermarkApp()
     window.show()
-    sys.exit(app.exec())
+    app.exec()
