@@ -198,7 +198,7 @@ class PdfWatermarkApp(QMainWindow):
         # COLOR PICKER
         # ________
         color_button = QPushButton("Color", self)
-        color_button.setGeometry(self.width() - 54, 418, 44, 30)
+        color_button.setGeometry(self.width() - 54, 416, 44, 30)
         color_button.clicked.connect(self.show_color_dialog)
 
         # POSITIONS DROP_DOWN
