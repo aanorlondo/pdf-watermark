@@ -1,7 +1,7 @@
 
 <div align="center">
 <h1 align="center">
-<img src="src/watermark.ico" width="100" />
+<img src="src/appdata/watermark.ico" width="100" />
 <br>
 pdf-watermark
 </h1>
@@ -12,6 +12,8 @@ pdf-watermark
 <img src="https://img.shields.io/badge/Python-3776AB.svg?style=for-the-badge&logo=Python&logoColor=white" alt="Python" />
 <img src="https://img.shields.io/badge/Qt-%23217346.svg?style=for-the-badge&logo=Qt&logoColor=white" alt="QT" />
 <img src="https://img.shields.io/badge/JSON-000000.svg?style=for-the-badge&logo=JSON&logoColor=white" alt="JSON" />
+<img src="https://img.shields.io/badge/GNU%20Bash-4EAA25.svg?style=for-the-badge&logo=GNU-Bash&logoColor=white" alt="GNU%20Bash" />
+<img src="https://img.shields.io/badge/Markdown-000000.svg?style=for-the-badge&logo=Markdown&logoColor=white" alt="Markdown" />
 </p>
 </div>
 
@@ -34,7 +36,7 @@ pdf-watermark
 
 ## 📍 Overview
 
-This project is a PDF watermarking tool that provides both a command-line interface (CLI) and a graphical user interface (GUI). Its core functionalities include applying watermarks to PDF files, with the ability to customize settings such as text size, position, color, and font. The tool offers convenience and efficiency by allowing users to process multiple PDF files at once. Its value proposition lies in its simplicity and ease of use, making it a useful tool for individuals or organizations that need to protect their PDF documents with watermarks.
+The PDF Watermark project is a Python application that offers both a command-line interface (CLI) and a graphical user interface (GUI) for adding watermarks to PDF files. The core functionality includes loading a configuration file, calculating the position and size of the watermark, and applying it to each page of the PDF. The project's purpose is to provide an easy and efficient way to apply watermarks, allowing users to protect their PDFs and add branding or copyright information. Its value proposition lies in its flexibility, as it supports custom configuration files and provides options for both CLI and GUI interactions.
 
 ---
 
@@ -44,7 +46,7 @@ Feature | Description |
 |---|---|
 | **🏗 Structure and Organization** | The codebase has a clear organization with separate files for the CLI and GUI versions, as well as a file for constants and variables. There is also a version file and a separate directory for storing input and output files. |
 | **📝 Code Documentation** | The codebase lacks comprehensive documentation, making it difficult for new developers to understand the functionality and usage of the application. |
-| **🧩 Dependency Management** | The codebase manages dependencies using external libraries such as PyPDF2, reportlab, and PyQt6, which are imported in the necessary files for PDF manipulation, watermark generation, and GUI development, respectively. |
+| **🧩 Dependency Management** | The codebase manages dependencies using external libraries such as PyPDF2, reportlab, and PyQt6, which are imported in the necessary files for PDF manipulation, watermark generation, and GUI development, respectively. The codebase uses the `requirements.txt` file to specify the required dependencies, and the `setup.py` file manages the installation of these dependencies using `pip`. This ensures consistent dependency management and ease of installation. |
 | **♻️ Modularity and Reusability** | The codebase demonstrates modularity and reusability by separating the CLI and GUI versions into individual files, allowing these components to be used independently or together. |
 | **🔒 Security Measures** | There is no specific information available about security measures, so it's unclear if there are any specific measures implemented to protect user data or prevent vulnerabilities. |
 | **🔌 External Integrations** | The codebase integrates external libraries such as PyPDF2, reportlab, and PyQt6 for PDF manipulation, watermark generation, and GUI development, respectively. |
@@ -61,31 +63,38 @@ Feature | Description |
 ```bash
 repo
 ├── LICENSE
-├── VERSION
-└── src
-    ├── config.json
-    ├── misc.py
-    ├── requirements.txt
-    ├── template.txt
-    ├── test
-    │   ├── input
-    │   │   └── pdf-test.pdf
-    │   └── output
-    │       ├── NAME_MARKED_POSITION_SIZE.pdf
-    │       ├── pdf-test_marked_bottom-left_8.pdf
-    │       ├── pdf-test_marked_bottom-right_8.pdf
-    │       ├── pdf-test_marked_bottom_8.pdf
-    │       ├── pdf-test_marked_center_8.pdf
-    │       ├── pdf-test_marked_left_8.pdf
-    │       ├── pdf-test_marked_right_8.pdf
-    │       ├── pdf-test_marked_top-left_8.pdf
-    │       ├── pdf-test_marked_top-right_8.pdf
-    │       └── pdf-test_marked_top_8.pdf
-    ├── watermark.ico
-    ├── watermark_cli.py
-    └── watermark_gui.py
+├── README.md
+├── docs
+│   ├── cli.png
+│   └── gui.png
+├── src
+│   ├── appdata
+│   │   ├── VERSION.txt
+│   │   ├── config.json
+│   │   ├── template.txt
+│   │   └── watermark.ico
+│   ├── misc.py
+│   ├── requirements.txt
+│   ├── setup.py
+│   ├── setup.sh
+│   ├── watermark_cli.py
+│   └── watermark_gui.py
+└── test
+    ├── input
+    │   └── pdf-test.pdf
+    └── output
+        ├── NAME_MARKED_POSITION_SIZE.pdf
+        ├── pdf-test_marked_bottom-left_8.pdf
+        ├── pdf-test_marked_bottom-right_8.pdf
+        ├── pdf-test_marked_bottom_8.pdf
+        ├── pdf-test_marked_center_8.pdf
+        ├── pdf-test_marked_left_8.pdf
+        ├── pdf-test_marked_right_8.pdf
+        ├── pdf-test_marked_top-left_8.pdf
+        ├── pdf-test_marked_top-right_8.pdf
+        └── pdf-test_marked_top_8.pdf
 
-4 directories, 21 files
+6 directories, 25 files
 ```
 
 ---
@@ -94,21 +103,20 @@ repo
 
 ## 🧩 Modules
 
-<details closed><summary>Root</summary>
-
-| File    | Summary                                                                                                                                                                                       | Module   |
-|:--------|:----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|:---------|
-| VERSION | The provided code snippet is not given, so it is not possible to offer a comprehensive summary of its core functionalities. Please provide the code snippet so that I can assist you further. | VERSION  |
-
-</details>
-
 <details closed><summary>Src</summary>
 
-| File             | Summary                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    | Module               |
-|:-----------------|:-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|:---------------------|
-| watermark_cli.py | This code snippet provides a watermarking functionality for PDF files. It loads a configuration file with settings for the watermark, such as text size, position, color, and font. It then applies the watermark to all PDF files in a specified input directory, saving the watermarked files in an output directory. The code uses the PyPDF2 and reportlab libraries for PDF manipulation and watermark generation, respectively. It also includes a command-line interface (CLI) for easy execution and customization.                | src/watermark_cli.py |
-| misc.py          | This code snippet defines several constants and variables for a PDF watermarking application. It includes paths to input and output directories, configuration files, and a template file. It also sets up default values for the watermark properties. The snippet handles reading the template file and the version file, and contains information about the application's name, version, and usage instructions for both the GUI and CLI versions.                                                                                      | src/misc.py          |
-| watermark_gui.py | The provided code snippet is a GUI application for adding watermarks to PDF files. It uses the PyQt6 library for creating the graphical user interface. The application allows users to select an input directory and an output directory, enter a watermark text, and adjust configuration settings. It also provides options to load and save templates, set colors, and choose watermark positions. The application applies the watermark to the PDF files in the input directory and saves the modified files in the output directory. | src/watermark_gui.py |
+| File             | Summary                                                                                                                                                                                                                                                                                                                                                                                                                                                    | Module               |
+|:-----------------|:-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|:---------------------|
+| watermark_cli.py | This code snippet is a Python script that applies a watermark to PDF files. It uses the PyPDF2, reportlab, and json libraries to load a configuration file, calculate the position and size of the watermark, and add the watermark to each page of the input PDF files. The script can be run from the command line, accepting arguments for the input directory, output directory, and watermark text, and it also supports a custom configuration file. | src/watermark_cli.py |
+| setup.sh         | This code snippet performs a set of tasks to build a Python application:                                                                                                                                                                                                                                                                                                                                                                                   | src/setup.sh         |
+|                  |                                                                                                                                                                                                                                                                                                                                                                                                                                                            |                      |
+|                  | 1. It sets up a virtual environment using Python's `venv` module and activates it.                                                                                                                                                                                                                                                                                                                                                                         |                      |
+|                  | 2. It installs the required dependencies listed in the `requirements.txt` file using `pip`.                                                                                                                                                                                                                                                                                                                                                                |                      |
+|                  | 3. It deletes any previous build artifacts and runs the `setup.py` script to generate a macOS application package using `py2app`.                                                                                                                                                                                                                                                                                                                          |                      |
+|                  | 4. Finally, it deactivates the virtual environment and cleans it up, and displays a success message with the path to the built application.                                                                                                                                                                                                                                                                                                                |                      |
+| misc.py          | This code snippet defines various file paths and directory locations used in a PDF watermarking application. It also initializes default configuration values and provides information about the application's version and information for both the GUI and CLI versions. Additionally, it reads a template file to set default watermark text if the file exists.                                                                                         | src/misc.py          |
+| watermark_gui.py | The code snippet is a Python script that creates a graphical user interface (GUI) for a PDF watermarking application. It uses the PyQt6 library for building the GUI components. The GUI allows users to select input and output directories, enter text for the watermark, configure settings, and apply the watermark to PDF files. The script also handles error messages and provides information to the user.                                         | src/watermark_gui.py |
+| setup.py         | This code snippet sets up a Python application called "PdfWatermark" using the `setuptools` library. It defines the application's data, version, and build options. The application is built using `py2app` and includes data files and an icon. The setup configuration also includes information such as the application name, version, and copyright details.                                                                                           | src/setup.py         |
 
 </details>
 
@@ -151,21 +159,43 @@ You can save your custom text as template for your your watermarks
     - You can save your template wihin the `src/template.txt` file
 
 ### Using the CLI Interface
-```
-python watermark_cli.py --help
-```
-
+- Run the following commands :
+    ```
+    cd pdf-watermark/src
+    python watermark_cli.py --help
+    ```
+- Enjoy !
 
 <img src="docs/cli.png" alt="CLI" width="650px"/>
 
 
 ### Using the GUI Interface
-```
-python watermark_gui.py
-```
 
-<img src="docs/gui.png" alt="CLI" width="450px"/>
+#### 1- Run from Codebase
+- Run the following commands :
+    ```
+    cd pdf-watermark/src
+    python watermark_gui.py
+    ```
+- Enjoy !
 
+#### 2- Install as MacOS Desktop Application
+
+- Run the following commands :
+    ```
+    cd pdf-watermark/src
+    sh setup.sh
+    ```
+- Then, using the finder, go under `pdf-watermark/src/dist/` folder. 
+- `Double-click` or `Drag&drop` the Application directly to your Dock.
+
+    <img src="docs/install.png" alt="CLI" width="450px"/>
+
+- Run the application
+
+    <img src="docs/gui.png" alt="CLI" width="450px"/>
+
+- Enjoy !
 ---
 
 
