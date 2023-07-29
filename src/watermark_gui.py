@@ -8,7 +8,6 @@ from misc import (
     TEMPLATE_FILE,
     DEFAULT_INPUT_DIR,
     DEFAULT_OUTPUT_DIR,
-    AVAILABLE_POSITIONS,
     DEFAULT_WATERMARK_GUI,
 )
 from watermark_cli import WatermarkConfig, WatermarkApp
@@ -49,10 +48,21 @@ class PdfWatermarkApp(QMainWindow):
         self.watermark_config_text = json.dumps(
             self.watermark_config.load_config(), indent=4
         )
-        self.input_path = DEFAULT_INPUT_DIR
-        self.output_path = DEFAULT_OUTPUT_DIR
-        self.text_input = DEFAULT_WATERMARK_GUI
-        self.watermark_template = DEFAULT_WATERMARK_GUI
+        self.input_path = str(DEFAULT_INPUT_DIR)
+        self.output_path = str(DEFAULT_OUTPUT_DIR)
+        self.text_input = str(DEFAULT_WATERMARK_GUI)
+        self.positions_dropdown = [
+            "top",
+            "bottom",
+            "left",
+            "right",
+            "center",
+            "top-left",
+            "top-right",
+            "bottom-left",
+            "bottom-right",
+        ]
+        self.watermark_template = str(DEFAULT_WATERMARK_GUI)
         self.create_widgets()
 
     # --------#
@@ -188,16 +198,16 @@ class PdfWatermarkApp(QMainWindow):
         # COLOR PICKER
         # ________
         color_button = QPushButton("Color", self)
-        color_button.setGeometry(self.width() - 54, 412, 44, 30)
+        color_button.setGeometry(self.width() - 54, 418, 44, 30)
         color_button.clicked.connect(self.show_color_dialog)
 
         # POSITIONS DROP_DOWN
         # ______
         self.dropdown = QComboBox(self)
         self.dropdown.addItem("Position")
-        for item in AVAILABLE_POSITIONS:
+        for item in self.positions_dropdown:
             self.dropdown.addItem(item)
-        self.dropdown.setGeometry(248, 414, 100, 30)
+        self.dropdown.setGeometry(248, 418, 100, 30)
         self.dropdown.currentIndexChanged.connect(self.on_dropdown_selection)
 
         # SET FIXED GEOMETRY
@@ -289,7 +299,7 @@ class PdfWatermarkApp(QMainWindow):
     # ______
     def on_dropdown_selection(self, index) -> None:
         position = self.dropdown.itemText(index)
-        if position in AVAILABLE_POSITIONS:
+        if position in self.positions_dropdown:
             config_text = self.config_entry.toPlainText()
             try:
                 config_dict = json.loads(config_text)
@@ -339,7 +349,7 @@ class PdfWatermarkApp(QMainWindow):
         box = QMessageBox(self)
         box.setIconPixmap(QPixmap(GUI_ICON_PATH))
         box.setStyleSheet(FONT_SIZE)
-        box.setText(message)
+        box.setText(f"{message} / {self.positions_dropdown}")
         box.exec()
 
     # -----#

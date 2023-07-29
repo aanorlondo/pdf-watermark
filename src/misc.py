@@ -47,17 +47,6 @@ DEFAULT_CONFIG = {
     "angle": 0,
     "alpha": 0.8,
 }
-AVAILABLE_POSITIONS = [
-    "top",
-    "bottom",
-    "left",
-    "right",
-    "center",
-    "top-left",
-    "top-right",
-    "bottom-left",
-    "bottom-right",
-]
 
 # TEMPLATE
 # _____

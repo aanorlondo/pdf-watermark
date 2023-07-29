@@ -8,10 +8,10 @@ pip install -r requirements.txt
 
 # BUILD APP
 # ________
-rm -rf build dist
-rm -rf .eggs
+rm -rf build dist .eggs
 python setup.py py2app
 deactivate
+rm -rf .eggs
 rm -rf .venv
 
 # SUCCESS
