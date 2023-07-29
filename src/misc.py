@@ -1,10 +1,13 @@
 from os.path import dirname, abspath, join, exists
+from os import environ
 
 # GLOBAL
 # ________
+HOME_DIR = environ["HOME"]
+DOWNLOADS_DIR = "Downloads"
 CURRENT_DIR = dirname(abspath(__file__))
-DEFAULT_OUTPUT_DIR = join(CURRENT_DIR, "test", "output")
-DEFAULT_INPUT_DIR = join(CURRENT_DIR, "test", "input")
+DEFAULT_INPUT_DIR = join(HOME_DIR, DOWNLOADS_DIR, "input")
+DEFAULT_OUTPUT_DIR = join(HOME_DIR, DOWNLOADS_DIR, "output")
 CONFIG_FILE = join(CURRENT_DIR, "config.json")
 TEMPLATE_FILE = join(CURRENT_DIR, "template.txt")
 
