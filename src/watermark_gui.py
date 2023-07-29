@@ -373,6 +373,9 @@ class PdfWatermarkApp(QMainWindow):
 
         # Apply Watermark
         # ____________
+        class EmptyDirectory(Exception):
+            pass
+
         try:
             self.watermark_config.update_config(config=config_dict)
             watermark_app = WatermarkApp(self.watermark_config)
@@ -383,14 +386,14 @@ class PdfWatermarkApp(QMainWindow):
             )
 
             if processed_count is None:
-                raise FileNotFoundError(
+                raise EmptyDirectory(
                     "No PDF files found in the given input directory. Try another !"
                 )
 
             self.show_info(message=f"Succesfully processed {processed_count} files.")
             print(f"--Succesfully processed {processed_count} files.")
 
-        except FileNotFoundError as e:
+        except EmptyDirectory as e:
             self.show_error(message=str(e))
         except Exception as e:
             self.show_error(message=f"Something went wrong: {e}")
