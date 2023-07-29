@@ -202,7 +202,7 @@ The project maintainers will review your changes and provide feedback or merge t
 
 ## 📄 License
 
-This project is licensed under the `MIT` License. See the [LICENSE](LICENCE) file for additional info.
+This project is licensed under the `MIT` License. See the [LICENSE](LICENSE) file for additional info.
 
 ---
 
