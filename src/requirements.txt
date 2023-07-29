@@ -1,0 +1,12 @@
+# Pyenv
+# 3.11.4
+
+# GUI
+PyQt6
+
+# PDF & Watermark
+PyPDF2
+reportlab
+
+# AsciiArt
+pyfiglet
