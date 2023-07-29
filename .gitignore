@@ -1,5 +1,15 @@
+# PYTHON
 __pycache__
 .venv
 .vscode
-.DS_STORE
+
+# LOCAL REPO
 local_*
+.DS_STORE
+
+# BUILD
+*.spec
+build
+dist
+package.sh
+builddmg.sh

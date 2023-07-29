@@ -58,7 +58,7 @@ if exists(TEMPLATE_FILE):
 
 # VERSION
 # _____
-VERSION_FILE = join(CURRENT_DIR, "..", "VERSION")
+VERSION_FILE = join(CURRENT_DIR, "VERSION")
 
 
 def read_version_file() -> str:
