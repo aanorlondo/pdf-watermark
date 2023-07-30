@@ -6,12 +6,12 @@ import sys
 # ROOT
 # _____
 CURRENT_DIR = "UNDEFINED"
-frozen = getattr(sys, "frozen", "")
-if not frozen:
+FROZEN = getattr(sys, "frozen", "")
+if not FROZEN:
     # not frozen: in regular python interpreter
     CURRENT_DIR = dirname(abspath(__file__))
 
-elif frozen in ("macosx_app",):
+elif FROZEN in ("macosx_app",):
     # py2app
     CURRENT_DIR = environ["RESOURCEPATH"]
 
