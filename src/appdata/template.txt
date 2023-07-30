@@ -1,4 +1,1 @@
-If the template.txt file exists, 
-its content (this text) will be automatically used as Watermark text.
-Otherwise, the GUI will be using : "Type down your Watermark text here"
-And the CLI : "TESTING CLI STANDALONE"
+Type down your Watermark text here
