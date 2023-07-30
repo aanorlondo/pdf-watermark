@@ -283,7 +283,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--config",
         type=str,
-        help="Custom config file path to use. Default: {CONFIG_FILE}.",
+        help=f"Custom config file path to use. Default: {CONFIG_FILE}.",
         default=CONFIG_FILE,
     )
 
