@@ -1,4 +1,5 @@
 from misc import (
+    FROZEN,
     APP_NAME,
     FONT_SIZE,
     FONT_STYLE,
@@ -22,13 +23,13 @@ from PyQt6.QtWidgets import (
     QHBoxLayout,
     QMessageBox,
     QVBoxLayout,
-    QComboBox,
     QTextEdit,
     QWidget,
     QFrame,
     QLabel,
+    QMenu,
 )
-from PyQt6.QtCore import Qt
+from PyQt6.QtCore import Qt, QTimer
 from PyQt6.QtGui import QIcon, QPixmap, QColor
 
 
@@ -203,12 +204,21 @@ class PdfWatermarkApp(QMainWindow):
 
         # POSITIONS DROP_DOWN
         # ______
-        self.dropdown = QComboBox(self)
-        self.dropdown.addItem("Position")
+        self.dropdown_button = QPushButton("Position", self)
+        self.dropdown_button.setGeometry(259, 416, 80, 30)
+        self.menu = QMenu(self)
+
         for item in self.positions_dropdown:
-            self.dropdown.addItem(item)
-        self.dropdown.setGeometry(248, 418, 100, 30)
-        self.dropdown.currentIndexChanged.connect(self.on_dropdown_selection)
+            self.menu.addAction(item)
+
+        self.dropdown_button.setMenu(self.menu)
+
+        # This was mendatory to unloack the menu on the Desktop App
+        if FROZEN:
+            self.dropdown_button.click()
+            self.dropdown_button.releaseMouse()
+
+        self.menu.triggered.connect(self.on_dropdown_selection)
 
         # SET FIXED GEOMETRY
         # ____
@@ -297,8 +307,8 @@ class PdfWatermarkApp(QMainWindow):
 
     # POSITION PICKER
     # ______
-    def on_dropdown_selection(self, index) -> None:
-        position = self.dropdown.itemText(index)
+    def on_dropdown_selection(self, action) -> None:
+        position = action.text()
         if position in self.positions_dropdown:
             config_text = self.config_entry.toPlainText()
             try:
@@ -349,7 +359,7 @@ class PdfWatermarkApp(QMainWindow):
         box = QMessageBox(self)
         box.setIconPixmap(QPixmap(GUI_ICON_PATH))
         box.setStyleSheet(FONT_SIZE)
-        box.setText(f"{message} / {self.positions_dropdown}")
+        box.setText(message)
         box.exec()
 
     # -----#
@@ -419,7 +429,7 @@ class PdfWatermarkApp(QMainWindow):
 
 # RUN THE GUI
 if __name__ == "__main__":
-    app = QApplication(sys.argv)
+    app = QApplication([])
     app.setWindowIcon(QIcon(GUI_ICON_PATH))
     window = PdfWatermarkApp()
     window.show()
