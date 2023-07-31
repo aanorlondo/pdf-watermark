@@ -184,10 +184,7 @@ class WatermarkApp:
             output_file.close()
         os.remove(TMP_WATERMARK)
 
-    def found_pdf_files(
-        self,
-        dir_path: str,
-    ) -> bool:
+    def found_pdf_files(self, dir_path: str) -> bool:
         """
         Check the presence of PDF files in given directory
         """
@@ -196,6 +193,17 @@ class WatermarkApp:
             if filename.lower().endswith(".pdf"):
                 return True
         return False
+
+    def count_pdf_files(self, dir_path: str) -> int:
+        """
+        Count the number of PDF files found in the given directory
+        """
+        count = 0
+        files_list = os.listdir(dir_path)
+        for filename in files_list:
+            if filename.lower().endswith(".pdf"):
+                count += 1
+        return count
 
     def apply_watermark_to_all_pdfs(
         self, input_directory, output_directory, watermark_text

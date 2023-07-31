@@ -403,12 +403,6 @@ class PdfWatermarkApp(QMainWindow):
             print(f"Error parsing configuration: {e}")
             return
 
-        # Ask confirmation
-        # ________________
-        user_confirmation = self.show_confirm(message="Confirm action ?")
-        if not user_confirmation:
-            return
-
         # Apply Watermark
         # ____________
         class EmptyDirectory(Exception):
@@ -424,6 +418,14 @@ class PdfWatermarkApp(QMainWindow):
                 raise EmptyDirectory(
                     "No PDF files found in the given input directory. Try another !"
                 )
+
+            # Ask confirmation
+            count_files = watermark_app.count_pdf_files(dir_path=self.input_path)
+            user_confirmation = self.show_confirm(
+                message=f"{count_files} PDF documents will be processed.\nConfirm ?"
+            )
+            if not user_confirmation:
+                return
 
             # Process the files
             processed_count = watermark_app.apply_watermark_to_all_pdfs(
