@@ -3,7 +3,7 @@ from glob import glob
 
 # APP DATA
 # _________
-APP = ["watermark_gui.py"]
+APP = ["pdfwatermark_gui.py"]
 APP_NAME = "PdfWatermark"
 DATA_DIRNAME = "appdata"
 VERSIONFILE = "VERSION.txt"
@@ -28,7 +28,7 @@ VERSION = get_version()
 # _________
 OPTIONS = {
     "argv_emulation": True,
-    "iconfile": f"{DATA_DIRNAME}/watermark.ico",
+    "iconfile": f"{DATA_DIRNAME}/pdfwatermark.ico",
     "plist": {
         "CFBundleName": APP_NAME,
         "CFBundleDisplayName": APP_NAME,

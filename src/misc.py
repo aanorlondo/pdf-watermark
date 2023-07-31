@@ -31,7 +31,7 @@ TEMPLATE_FILE = join(CURRENT_DIR, APPDATA_DIR, "template.txt")
 
 # GUI
 # _____
-GUI_ICON_PATH = join(CURRENT_DIR, APPDATA_DIR, "watermark.ico")
+GUI_ICON_PATH = join(CURRENT_DIR, APPDATA_DIR, "pdfwatermark.ico")
 FONT_STYLE = "font: italic bold;"
 FONT_SIZE = "font-size: 10px;"
 

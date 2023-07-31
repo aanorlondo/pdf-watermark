@@ -11,8 +11,8 @@ from misc import (
     DEFAULT_OUTPUT_DIR,
     DEFAULT_WATERMARK_GUI,
 )
-from watermark_cli import WatermarkConfig, WatermarkApp
-import sys, json, traceback, os
+from pdfwatermark_cli import WatermarkConfig, WatermarkApp
+import json, traceback, os
 
 from PyQt6.QtWidgets import (
     QApplication,
@@ -29,7 +29,7 @@ from PyQt6.QtWidgets import (
     QLabel,
     QMenu,
 )
-from PyQt6.QtCore import Qt, QTimer
+from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QIcon, QPixmap, QColor
 
 
@@ -349,9 +349,9 @@ class PdfWatermarkApp(QMainWindow):
             print(f"Error saving template text: {e}")
             return
 
-    # ------------#
-    # MESSAGE BOX #
-    # ------------#
+    # --------------#
+    # MESSAGE BOXES #
+    # --------------#
     def show_error(self, message) -> None:
         QMessageBox.critical(self, "Error", message, QMessageBox.StandardButton.Ok)
 
@@ -362,6 +362,16 @@ class PdfWatermarkApp(QMainWindow):
         box.setText(message)
         box.exec()
 
+    def show_confirm(self, message) -> bool:
+        confirm = QMessageBox(self)
+        confirm.setIconPixmap(QPixmap(GUI_ICON_PATH))
+        confirm.setStyleSheet(FONT_SIZE)
+        buttons = QMessageBox.StandardButton.Ok | QMessageBox.StandardButton.Cancel
+        confirm.setStandardButtons(buttons)
+        confirm.setText(message)
+        input = confirm.exec()
+        return input == QMessageBox.StandardButton.Ok
+
     # -----#
     # CORE #
     # -----#
@@ -369,6 +379,7 @@ class PdfWatermarkApp(QMainWindow):
         """
         Process the watermark operation.
         """
+
         # Check different paths (to avoid loops)
         # ____________
         if self.input_path == self.output_path:
@@ -392,9 +403,11 @@ class PdfWatermarkApp(QMainWindow):
             print(f"Error parsing configuration: {e}")
             return
 
-        print("--Input Path:", self.input_path)
-        print("--Output Path:", self.output_path)
-        print("--Configuration:", config_dict)
+        # Ask confirmation
+        # ________________
+        user_confirmation = self.show_confirm(message="Confirm action ?")
+        if not user_confirmation:
+            return
 
         # Apply Watermark
         # ____________
@@ -402,18 +415,22 @@ class PdfWatermarkApp(QMainWindow):
             pass
 
         try:
+            # Provision core App
             self.watermark_config.update_config(config=config_dict)
             watermark_app = WatermarkApp(self.watermark_config)
+
+            # Check found PDF files
+            if not watermark_app.found_pdf_files(dir_path=self.input_path):
+                raise EmptyDirectory(
+                    "No PDF files found in the given input directory. Try another !"
+                )
+
+            # Process the files
             processed_count = watermark_app.apply_watermark_to_all_pdfs(
                 input_directory=self.input_path,
                 output_directory=self.output_path,
                 watermark_text=watermark_text,
             )
-
-            if processed_count is None:
-                raise EmptyDirectory(
-                    "No PDF files found in the given input directory. Try another !"
-                )
 
             self.show_info(message=f"Succesfully processed {processed_count} files.")
             print(f"--Succesfully processed {processed_count} files.")
