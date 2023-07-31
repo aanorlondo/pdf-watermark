@@ -1,20 +1,13 @@
 from misc import (
-    APP_NAME,
     CONFIG_FILE,
-    APP_VERSION,
-    APP_INFO_CLI,
     TMP_WATERMARK,
     DEFAULT_CONFIG,
-    DEFAULT_INPUT_DIR,
-    DEFAULT_OUTPUT_DIR,
-    DEFAULT_WATERMARK_CLI,
 )
 from PyPDF2 import PdfReader, PdfWriter
 from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen import canvas
 from reportlab.lib import colors
-import json, os, traceback
-import pyfiglet
+import json, os
 
 
 class WatermarkConfig:
@@ -67,8 +60,10 @@ class WatermarkApp:
         position,
         page_width,
         page_height,
-        text_width,
-        text_height,
+        text_size,
+        canvas,
+        font,
+        lines,
     ) -> tuple:
         """
         Calculate the x, y coordinates for the watermark text based on the specified position setting.
@@ -77,12 +72,29 @@ class WatermarkApp:
             position (str): Watermark position setting ("center", "top", "bottom", "left", or "right").
             page_width (float): Width of the page in points (1 inch = 72 points).
             page_height (float): Height of the page in points (1 inch = 72 points).
-            text_width (float): Width of the watermark text in points.
-            text_height (float): Height of the watermark text in points.
+            text_size (int): Font size of the text.
+            canvas (obj): PDF canvas used to print the Watermark.
+            font (str): Name of the font used to draw the Watermark.
+            lines (list): List of the lines contained in the Watermark text.
 
         Returns:
             Tuple (x, y) with the calculated coordinates for the watermark text.
         """
+
+        # Get Height = nb_lines x font_size
+        nb_lines = len(lines)
+        text_height = nb_lines * text_size
+
+        # Get Width = longest_line x font_size % font_name
+        longest_line = ""
+        for line in lines:
+            if len(line) > len(longest_line):
+                longest_line = line
+        text_width = canvas.stringWidth(
+            text=longest_line,
+            fontName=font,
+            fontSize=text_size,
+        )
 
         # Coordinates calculation
         # _______
@@ -107,16 +119,10 @@ class WatermarkApp:
             "bottom-left": (x_left, y_bottom),
             "bottom-right": (x_right, y_bottom),
         }
-
         # Return specified position (center if not found)
         return position_settings.get(position, position_settings["center"])
 
-    def add_watermark_to_pdf(
-        self,
-        input_path,
-        output_path,
-        watermark_text,
-    ) -> None:
+    def add_watermark_to_pdf(self, input_path, output_path, watermark_text) -> None:
         # Save Watermark config
         text_size = self.config.get_text_size()
         position = self.config.get_position()
@@ -137,45 +143,28 @@ class WatermarkApp:
         # Break the text to lines then write each line separately
         lines = watermark_text.split("\n")
 
-        # Get Height = nb_lines x font_size
-        nb_lines = len(lines)
-        text_height = nb_lines * text_size
-
-        # Get Width = longest_line x font_size % font_name
-        longest_line = ""
-        for line in lines:
-            if len(line) > len(longest_line):
-                longest_line = line
-        text_width = watermark_canvas.stringWidth(
-            text=longest_line,
-            fontName=font,
-            fontSize=text_size,
-        )
-
+        # Get coordinates
         x, y = self.calculate_position(
             position=position,
             page_width=width,
             page_height=height,
-            text_width=text_width,
-            text_height=text_height,
+            text_size=text_size,
+            canvas=watermark_canvas,
+            font=font,
+            lines=lines,
         )
+
+        # Prepare Watermark Canvas
         for line in lines:
             watermark_canvas.drawCentredString(x=x, y=y, text=line)
             y -= text_size
-        # watermark_canvas.drawCentredString(x=x, y=y, text=watermark_text)
         watermark_canvas.rotate(theta=angle)
         watermark_canvas.save()
-
-        # Open the input PDF
-        input_pdf = PdfReader(input_path)
-
-        # Create a PDF writer to save the output
         output_pdf = PdfWriter()
 
-        # Get the number of pages in the input PDF
-        num_pages = len(input_pdf.pages)
-
         # Read each page of the input PDF, add the watermark, and save it to the output PDF
+        input_pdf = PdfReader(input_path)
+        num_pages = len(input_pdf.pages)
         for page_num in range(num_pages):
             page = input_pdf.pages[page_num]
             watermark_pdf = PdfReader(TMP_WATERMARK)
@@ -193,16 +182,24 @@ class WatermarkApp:
         with open(output_file_path, "wb") as output_file:
             output_pdf.write(output_file)
             output_file.close()
-
-        # Clean up the temporary watermark file
         os.remove(TMP_WATERMARK)
 
-    def apply_watermark_to_all_pdfs(
+    def found_pdf_files(
         self,
-        input_directory,
-        output_directory,
-        watermark_text,
-    ) -> int | None:
+        dir_path: str,
+    ) -> bool:
+        """
+        Check the presence of PDF files in given directory
+        """
+        files_list = os.listdir(dir_path)
+        for filename in files_list:
+            if filename.lower().endswith(".pdf"):
+                return True
+        return False
+
+    def apply_watermark_to_all_pdfs(
+        self, input_directory, output_directory, watermark_text
+    ) -> int:
         """
         Apply watermark text to every page of every PDF file in the input directory
         and save the resulting PDFs in the output directory.
@@ -216,19 +213,6 @@ class WatermarkApp:
             None
         """
 
-        # Check the presence of PDF files
-        files_list = os.listdir(input_directory)
-        found = False
-        for filename in files_list:
-            if filename.lower().endswith(".pdf"):
-                found = True
-                break
-
-        # Exit if no PDF files found
-        if not found:
-            print("No PDF files found in the input directory.")
-            return None
-
         # Create the Output dir if needed
         if not os.path.exists(output_directory):
             os.makedirs(output_directory)
@@ -239,93 +223,15 @@ class WatermarkApp:
         print(f'--Applying watermark text: \n"{watermark_text}"\n')
 
         # Loop over the PDF files
+        files_list = os.listdir(input_directory)
         processed_count = 0
         for filename in files_list:
             if filename.lower().endswith(".pdf"):
                 input_path = os.path.join(input_directory, filename)
-                self.add_watermark_to_pdf(input_path, output_directory, watermark_text)
+                self.add_watermark_to_pdf(
+                    input_path=input_path,
+                    output_path=output_directory,
+                    watermark_text=watermark_text,
+                )
                 processed_count += 1
         return processed_count
-
-
-# RUNNING STANDALONE
-import argparse
-
-
-if __name__ == "__main__":
-    # Define parser
-    parser = argparse.ArgumentParser(
-        description=f"{APP_NAME} (CLI)",
-        epilog=f"App version: {APP_VERSION}",
-        formatter_class=argparse.RawTextHelpFormatter,
-    )
-
-    # Core args
-    parser.add_argument(
-        "--input_dir",
-        type=str,
-        help="Input directory path for the PDF files",
-        default=DEFAULT_INPUT_DIR,
-    )
-    parser.add_argument(
-        "--output_dir",
-        type=str,
-        help="Output directory path for the watermarked PDF files",
-        default=DEFAULT_OUTPUT_DIR,
-    )
-    parser.add_argument(
-        "--text",
-        type=str,
-        help="Text to be used as watermark",
-        default=DEFAULT_WATERMARK_CLI,
-    )
-
-    parser.add_argument(
-        "--config",
-        type=str,
-        help=f"Custom config file path to use. Default: {CONFIG_FILE}.",
-        default=CONFIG_FILE,
-    )
-
-    # Version and app info
-    # FONT options: 'standard', 'big', 'slant', 'block', 'small', '3-d', '5lineoblique', 'digital'
-    ASCII_FONT = "small"
-    parser.add_argument(
-        "--version",
-        action="version",
-        version=f"{pyfiglet.figlet_format(APP_NAME, font=ASCII_FONT)}{APP_INFO_CLI}",
-        help="Show App version and information",
-    )
-
-    # Read values
-    args = parser.parse_args()
-    input_directory = args.input_dir
-    output_directory = args.output_dir
-    watermark_text = args.text
-    custom_config = args.config
-
-    # Check directories
-    if input_directory == output_directory:
-        print("Input and Output directories must be different.")
-        exit(1)
-
-    # Check text
-    if watermark_text.strip() == "":
-        print("Watermark text cannot be empty.")
-        exit(1)
-
-    # Config app
-    config = WatermarkConfig(config_file=custom_config)
-    watermark = WatermarkApp(config)
-
-    # Run app
-    try:
-        processed_count = watermark.apply_watermark_to_all_pdfs(
-            input_directory=input_directory,
-            output_directory=output_directory,
-            watermark_text=watermark_text,
-        )
-        print(f"--Succesfully processed {processed_count} files.")
-    except Exception as e:
-        print(f"ERROR: Something went wrong. Cause: {e}\n_____________")
-        traceback.print_exc()
