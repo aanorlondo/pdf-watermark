@@ -56,14 +56,7 @@ class WatermarkApp:
         self.config = config
 
     def calculate_position(
-        self,
-        position,
-        page_width,
-        page_height,
-        text_size,
-        canvas,
-        font,
-        lines,
+        self, position, page_width, page_height, text_size, canvas, font, lines
     ) -> tuple:
         """
         Calculate the x, y coordinates for the watermark text based on the specified position setting.
@@ -218,7 +211,7 @@ class WatermarkApp:
             watermark_text (str): Text to be used as the watermark.
 
         Returns:
-            None
+            The number of succesfully processed PDF documents
         """
 
         # Create the Output dir if needed
