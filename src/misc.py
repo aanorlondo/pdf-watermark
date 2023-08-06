@@ -2,6 +2,11 @@ from os.path import dirname, abspath, join, exists
 from os import environ
 import sys
 
+# GLOBAL
+# ________
+HOME_DIR = environ["HOME"]
+DOWNLOADS_DIR = "Downloads"
+APPDATA_DIR = "appdata"
 
 # ROOT
 # _____
@@ -10,18 +15,15 @@ FROZEN = getattr(sys, "frozen", "")
 if not FROZEN:
     # not frozen: in regular python interpreter
     CURRENT_DIR = dirname(abspath(__file__))
+    DEFAULT_INPUT_DIR = join(CURRENT_DIR, "..", "test", "input")
+    DEFAULT_OUTPUT_DIR = join(CURRENT_DIR, "..", "test", "output")
 
 elif FROZEN in ("macosx_app",):
     # py2app
     CURRENT_DIR = environ["RESOURCEPATH"]
+    DEFAULT_INPUT_DIR = join(HOME_DIR, DOWNLOADS_DIR, "input")
+    DEFAULT_OUTPUT_DIR = join(HOME_DIR, DOWNLOADS_DIR, "output")
 
-# GLOBAL
-# ________
-HOME_DIR = environ["HOME"]
-DOWNLOADS_DIR = "Downloads"
-APPDATA_DIR = "appdata"
-DEFAULT_INPUT_DIR = join(HOME_DIR, DOWNLOADS_DIR, "input")
-DEFAULT_OUTPUT_DIR = join(HOME_DIR, DOWNLOADS_DIR, "output")
 
 # APP DATA
 # ________
@@ -32,6 +34,8 @@ TEMPLATE_FILE = join(CURRENT_DIR, APPDATA_DIR, "template.txt")
 # GUI
 # _____
 GUI_ICON_PATH = join(CURRENT_DIR, APPDATA_DIR, "pdfwatermark.ico")
+FONTUP_ICON_PATH = join(CURRENT_DIR, APPDATA_DIR, "fontup.png")
+FONTDOWN_ICON_PATH = join(CURRENT_DIR, APPDATA_DIR, "fontdown.png")
 FONT_STYLE = "font: italic bold;"
 FONT_SIZE = "font-size: 10px;"
 
@@ -41,7 +45,7 @@ FONT_SIZE = "font-size: 10px;"
 TMP_WATERMARK = join(CURRENT_DIR, "tmp_watermark.pdf")
 DEFAULT_CONFIG = {
     "size": 15,
-    "font": "Helvetica",
+    "font": "Courier",
     "color": "#FF0000",
     "position": "center",
     "angle": 0,

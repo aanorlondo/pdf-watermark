@@ -7,7 +7,9 @@ from misc import (
     APP_INFO_GUI,
     GUI_ICON_PATH,
     TEMPLATE_FILE,
+    FONTUP_ICON_PATH,
     DEFAULT_INPUT_DIR,
+    FONTDOWN_ICON_PATH,
     DEFAULT_OUTPUT_DIR,
     DEFAULT_WATERMARK_GUI,
 )
@@ -24,13 +26,14 @@ from PyQt6.QtWidgets import (
     QMessageBox,
     QVBoxLayout,
     QTextEdit,
+    QComboBox,
     QWidget,
     QFrame,
     QLabel,
-    QMenu,
 )
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QIcon, QPixmap, QColor
+from reportlab.pdfbase._fontdata import standardFonts as STANDARD_FONTS
 
 
 ###########
@@ -53,11 +56,11 @@ class PdfWatermarkApp(QMainWindow):
         self.output_path = str(DEFAULT_OUTPUT_DIR)
         self.text_input = str(DEFAULT_WATERMARK_GUI)
         self.positions_dropdown = [
+            "center",
             "top",
             "bottom",
             "left",
             "right",
-            "center",
             "top-left",
             "top-right",
             "bottom-left",
@@ -161,6 +164,8 @@ class PdfWatermarkApp(QMainWindow):
         config_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         config_label.setStyleSheet(FONT_STYLE)
         layout.addWidget(config_label)
+        palette_label = QLabel("", self)
+        layout.addWidget(palette_label)
 
         self.config_entry = QTextEdit(self)
         self.config_entry.setFixedWidth(380)
@@ -189,37 +194,55 @@ class PdfWatermarkApp(QMainWindow):
         process_button.clicked.connect(self.process)
         layout.addWidget(process_button)
 
-        # APP INFO
+        # APP INFO BUTTON
         # ____________
         info_button = QPushButton(self)
         info_button.setIcon(QIcon(GUI_ICON_PATH))
         info_button.setGeometry(self.width() - 40, 10, 30, 30)
         info_button.clicked.connect(self.show_app_info)
 
+        ##########################
+        # CONFIG BUTTONS PALETTE #
+        ##########################
         # COLOR PICKER
         # ________
         color_button = QPushButton("Color", self)
-        color_button.setGeometry(self.width() - 54, 416, 44, 30)
+        color_button.setGeometry(self.width() - 54, 440, 44, 30)
         color_button.clicked.connect(self.show_color_dialog)
 
         # POSITIONS DROP_DOWN
         # ______
-        self.dropdown_button = QPushButton("Position", self)
-        self.dropdown_button.setGeometry(259, 416, 80, 30)
-        self.menu = QMenu(self)
-
-        for item in self.positions_dropdown:
-            self.menu.addAction(item)
-
-        self.dropdown_button.setMenu(self.menu)
-
+        self.dropdown_button = QComboBox(self)
+        self.dropdown_button.setGeometry(228, 441, 120, 30)
+        self.dropdown_button.addItems(self.positions_dropdown)
+        self.dropdown_button.currentIndexChanged.connect(self.on_position_selection)
         # This was mendatory to unloack the menu on the Desktop App
         if FROZEN:
-            self.dropdown_button.click()
+            self.dropdown_button.mouseDoubleClickEvent(None)
             self.dropdown_button.releaseMouse()
 
-        self.menu.triggered.connect(self.on_dropdown_selection)
+        # BUTTONS TO INCREASE AND DECREASE FONT SIZE
+        # ________
+        self.increase_font_button = QPushButton(self)
+        self.increase_font_button.setIcon(QIcon(FONTUP_ICON_PATH))
+        self.increase_font_button.setGeometry(184, 440, 20, 30)
+        self.increase_font_button.clicked.connect(self.increase_font_size)
 
+        self.decrease_font_button = QPushButton(self)
+        self.decrease_font_button.setIcon(QIcon(FONTDOWN_ICON_PATH))
+        self.decrease_font_button.setGeometry(209, 440, 20, 30)
+        self.decrease_font_button.clicked.connect(self.decrease_font_size)
+
+        # SYSTEM FONTS DROPDOWN
+        # ________
+        self.font_combobox = QComboBox(self)
+        self.font_combobox.setGeometry(10, 441, 177, 30)
+        self.font_combobox.addItems(list(STANDARD_FONTS))
+        self.font_combobox.currentIndexChanged.connect(self.on_font_selection)
+
+        #################
+        # WINDOW CONFIG #
+        #################
         # SET FIXED GEOMETRY
         # ____
         self.setFixedHeight(self.height())
@@ -307,8 +330,8 @@ class PdfWatermarkApp(QMainWindow):
 
     # POSITION PICKER
     # ______
-    def on_dropdown_selection(self, action) -> None:
-        position = action.text()
+    def on_position_selection(self, index) -> None:
+        position = self.positions_dropdown[index]
         if position in self.positions_dropdown:
             config_text = self.config_entry.toPlainText()
             try:
@@ -323,6 +346,59 @@ class PdfWatermarkApp(QMainWindow):
                 print(f"Error setting the position code: {e}")
                 traceback.print_exc()
                 return
+
+    # FONT SIZE +
+    # _____
+    def increase_font_size(self) -> None:
+        config_text = self.config_entry.toPlainText()
+        try:
+            config_dict = json.loads(config_text)
+            config_dict["size"] += 1
+            config_text = json.dumps(config_dict, indent=4)
+            self.config_entry.setText(config_text)
+        except Exception as e:
+            self.show_error(
+                message="Failed to load the font to your configuration. Add it manually or reload configuration default and try again."
+            )
+            print(f"Error setting the position code: {e}")
+            traceback.print_exc()
+            return
+
+    # FONT SIZE -
+    # _____
+    def decrease_font_size(self) -> None:
+        config_text = self.config_entry.toPlainText()
+        try:
+            config_dict = json.loads(config_text)
+            if config_dict["size"] > 1:
+                config_dict["size"] -= 1
+                config_text = json.dumps(config_dict, indent=4)
+                self.config_entry.setText(config_text)
+        except Exception as e:
+            self.show_error(
+                message="Failed to load the font to your configuration. Add it manually or reload configuration default and try again."
+            )
+            print(f"Error setting the position code: {e}")
+            traceback.print_exc()
+            return
+
+    # FONT PICKER
+    # _____
+    def on_font_selection(self, index) -> None:
+        font_name = STANDARD_FONTS[index]
+        config_text = self.config_entry.toPlainText()
+        try:
+            config_dict = json.loads(config_text)
+            config_dict["font"] = font_name.replace(" ", "")
+            config_text = json.dumps(config_dict, indent=4)
+            self.config_entry.setText(config_text)
+        except Exception as e:
+            self.show_error(
+                message="Failed to load the font to your configuration. Add it manually or reload configuration default and try again."
+            )
+            print(f"Error setting the position code: {e}")
+            traceback.print_exc()
+            return
 
     # LOAD AND SAVE TEMPLATE
     # ______
