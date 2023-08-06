@@ -7,6 +7,7 @@ from misc import (
     APP_INFO_GUI,
     GUI_ICON_PATH,
     TEMPLATE_FILE,
+    COLOR_ICON_PATH,
     FONTUP_ICON_PATH,
     DEFAULT_INPUT_DIR,
     FONTDOWN_ICON_PATH,
@@ -198,7 +199,7 @@ class PdfWatermarkApp(QMainWindow):
         # ____________
         info_button = QPushButton(self)
         info_button.setIcon(QIcon(GUI_ICON_PATH))
-        info_button.setGeometry(self.width() - 40, 10, 30, 30)
+        info_button.setGeometry(self.width() - 35, 10, 20, 30)
         info_button.clicked.connect(self.show_app_info)
 
         ##########################
@@ -206,8 +207,9 @@ class PdfWatermarkApp(QMainWindow):
         ##########################
         # COLOR PICKER
         # ________
-        color_button = QPushButton("Color", self)
-        color_button.setGeometry(self.width() - 54, 440, 44, 30)
+        color_button = QPushButton(self)
+        color_button.setIcon(QIcon(COLOR_ICON_PATH))
+        color_button.setGeometry(self.width() - 30, 440, 20, 30)
         color_button.clicked.connect(self.show_color_dialog)
 
         # POSITIONS DROP_DOWN
@@ -233,11 +235,11 @@ class PdfWatermarkApp(QMainWindow):
         self.decrease_font_button.setGeometry(209, 440, 20, 30)
         self.decrease_font_button.clicked.connect(self.decrease_font_size)
 
-        # SYSTEM FONTS DROPDOWN
+        # FONTS DROPDOWN
         # ________
         self.font_combobox = QComboBox(self)
         self.font_combobox.setGeometry(10, 441, 177, 30)
-        self.font_combobox.addItems(list(STANDARD_FONTS))
+        self.font_combobox.addItems(STANDARD_FONTS)
         self.font_combobox.currentIndexChanged.connect(self.on_font_selection)
 
         #################

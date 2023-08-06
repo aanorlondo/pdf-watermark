@@ -36,6 +36,7 @@ TEMPLATE_FILE = join(CURRENT_DIR, APPDATA_DIR, "template.txt")
 GUI_ICON_PATH = join(CURRENT_DIR, APPDATA_DIR, "pdfwatermark.ico")
 FONTUP_ICON_PATH = join(CURRENT_DIR, APPDATA_DIR, "fontup.png")
 FONTDOWN_ICON_PATH = join(CURRENT_DIR, APPDATA_DIR, "fontdown.png")
+COLOR_ICON_PATH = join(CURRENT_DIR, APPDATA_DIR, "color.png")
 FONT_STYLE = "font: italic bold;"
 FONT_SIZE = "font-size: 10px;"
 
